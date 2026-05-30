@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Mic, Square, Volume2, Loader2, Send } from 'lucide-react';
-import { GoogleGenerativeAI } from '@google/generative-ai';
+import axios from 'axios';
+import toast from 'react-hot-toast';
 import { useChatStore } from '../store/chatStore';
-
-const API_KEY = 'AIzaSyB2xa1-ck-MqfEms7KKeOBjTXJ74uPo7Pk';
-const genAI = new GoogleGenerativeAI(API_KEY);
 
 const getSystemInstruction = (level) => `You are a friendly, encouraging English conversation partner for an English learner. 
 Your primary goal is to KEEP THE CONVERSATION GOING and ENCOURAGE THE USER TO SPEAK.
@@ -31,23 +29,7 @@ const AIChatPage = () => {
   const chatSessionRef = useRef(null);
   const synthRef = useRef(window.speechSynthesis);
 
-  // Restore or Initialize Chat Session
-  useEffect(() => {
-    if (hasStarted && !chatSessionRef.current) {
-      // Reconstruct session from store history
-      const model = genAI.getGenerativeModel({ 
-        model: "gemini-2.5-flash",
-        systemInstruction: getSystemInstruction(level)
-      });
-      
-      const history = messages.map(m => ({
-        role: m.role === 'ai' ? 'model' : 'user',
-        parts: [{ text: m.text }]
-      }));
-
-      chatSessionRef.current = model.startChat({ history });
-    }
-  }, [hasStarted, level, messages]);
+  // Removed chatSessionRef as we now use stateless backend calls
 
   // Auto-scroll to bottom
   useEffect(() => {
@@ -114,7 +96,7 @@ const AIChatPage = () => {
       
       setRecognitionInstance(recognition);
     } else {
-      alert("Trình duyệt không hỗ trợ nhận diện giọng nói. Hãy dùng Google Chrome.");
+      toast.error('Trình duyệt không hỗ trợ nhận diện giọng nói. Hãy dùng Chrome.');
     }
 
     return () => {
@@ -140,37 +122,43 @@ const AIChatPage = () => {
   const initChat = async () => {
     setHasStarted(true);
     clearMessages();
+    setIsAIThinking(true);
+    
+    // Save the hidden prompt to store so Gemini's history is valid when restoring
+    addMessage('user', "Hello, let's start our conversation.");
+    
     try {
-      const model = genAI.getGenerativeModel({ 
-        model: "gemini-2.5-flash",
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const res = await axios.post(`${apiUrl}/api/chat`, {
+        message: "Hello, let's start our conversation.",
+        history: [],
         systemInstruction: getSystemInstruction(level)
       });
       
-      chatSessionRef.current = model.startChat({
-        history: [],
-      });
-
-      // Internal greeting
-      setIsAIThinking(true);
-      
-      // Save the hidden prompt to store so Gemini's history is valid when restoring
-      addMessage('user', "Hello, let's start our conversation.");
-      
-      const result = await chatSessionRef.current.sendMessage("Hello, let's start our conversation.");
-      const aiResponseText = result.response.text();
-      addMessage('ai', aiResponseText);
-      speakText(aiResponseText);
-      setIsAIThinking(false);
+      if (res.data.success) {
+        const aiResponseText = res.data.text;
+        addMessage('ai', aiResponseText);
+        speakText(aiResponseText);
+      }
     } catch (error) {
       console.error("Error initializing AI:", error);
+      toast.error('Lỗi kết nối tới AI. Hãy kiểm tra server.');
+    } finally {
+      setIsAIThinking(false);
     }
   };
 
   const handleSendDraft = async (e) => {
     e?.preventDefault();
-    if (!draftMessage.trim() || !chatSessionRef.current || isAIThinking) return;
+    if (!draftMessage.trim() || isAIThinking) return;
     
     const textToSend = draftMessage.trim();
+    // Get history BEFORE adding the new message
+    const history = messages.map(m => ({
+      role: m.role === 'ai' ? 'model' : 'user',
+      parts: [{ text: m.text }]
+    }));
+    
     addMessage('user', textToSend);
     setDraftMessage(''); // Clear input
     setIsAIThinking(true);
@@ -181,10 +169,20 @@ const AIChatPage = () => {
     }
     
     try {
-      const result = await chatSessionRef.current.sendMessage(textToSend);
-      const aiResponseText = result.response.text();
-      addMessage('ai', aiResponseText);
-      speakText(aiResponseText);
+      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+      const res = await axios.post(`${apiUrl}/api/chat`, {
+        message: textToSend,
+        history: history,
+        systemInstruction: getSystemInstruction(level)
+      });
+      
+      if (res.data.success) {
+        const aiResponseText = res.data.text;
+        addMessage('ai', aiResponseText);
+        speakText(aiResponseText);
+      } else {
+        throw new Error(res.data.message);
+      }
     } catch (error) {
       console.error("AI Error:", error);
       addMessage('ai', "Sorry, I'm having trouble connecting right now.");
@@ -274,11 +272,9 @@ const AIChatPage = () => {
         
         <button 
           onClick={() => {
-            if(window.confirm('Bạn muốn dừng cuộc gọi và quay lại chọn trình độ?')) {
-              synthRef.current?.cancel();
-              chatSessionRef.current = null;
-              resetChat();
-            }
+            synthRef.current?.cancel();
+            resetChat();
+            toast.success('Đã kết thúc cuộc trò chuyện');
           }}
           className="px-3 py-1.5 bg-red-500/20 text-red-400 rounded-full hover:bg-red-500/30 transition-colors text-sm font-medium flex items-center gap-1"
         >

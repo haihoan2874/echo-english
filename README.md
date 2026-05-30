@@ -54,5 +54,4 @@ src/
 
 ## Notes
 
-- The Gemini API key is hardcoded in `AIChatPage.jsx` for local development. Move it to a `.env` file before any public deployment.
 - All user data (vocab, playlists, history, chat level) is stored in the browser's localStorage. Clearing site data will reset everything.

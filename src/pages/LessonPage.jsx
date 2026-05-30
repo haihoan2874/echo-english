@@ -172,7 +172,7 @@ const BlankInput = ({ correctWord, onCorrect, isLineActive }) => {
     e.stopPropagation();
     const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
     if (!SpeechRecognition) {
-      alert("Trình duyệt của bạn không hỗ trợ nhận diện giọng nói (Hãy dùng Chrome).");
+      toast.error('Trình duyệt không hỗ trợ nhận diện giọng nói. Hãy dùng Chrome.');
       return;
     }
 
@@ -322,7 +322,8 @@ const LessonPage = () => {
     const fetchTranscript = async () => {
       try {
         setLoadingTranscript(true);
-        const res = await axios.get(`http://localhost:3001/api/transcript/${id}`);
+        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
+        const res = await axios.get(`${apiUrl}/api/transcript/${id}`);
         if (res.data.success) {
           // Merge short chunks into natural sentences before storing
           const merged = mergeTranscriptChunks(res.data.data, 1.5);

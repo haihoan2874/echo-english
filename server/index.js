@@ -1,6 +1,10 @@
 import express from 'express';
 import cors from 'cors';
 import { YoutubeTranscript } from 'youtube-transcript';
+import { GoogleGenerativeAI } from '@google/generative-ai';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3001;
@@ -33,6 +37,39 @@ app.get('/api/transcript/:videoId', async (req, res) => {
     res.status(500).json({
       success: false,
       message: 'Failed to fetch transcript. The video might not have English subtitles.',
+      error: error.message
+    });
+  }
+});
+
+// API: Gemini Chat
+app.post('/api/chat', async (req, res) => {
+  try {
+    const { message, history, systemInstruction } = req.body;
+    
+    if (!process.env.GEMINI_API_KEY) {
+      return res.status(500).json({ success: false, message: 'GEMINI_API_KEY is not configured.' });
+    }
+
+    const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY);
+    const model = genAI.getGenerativeModel({ 
+      model: "gemini-2.5-flash",
+      systemInstruction: systemInstruction 
+    });
+
+    const chatSession = model.startChat({ history: history || [] });
+    const result = await chatSession.sendMessage(message);
+    const aiResponseText = result.response.text();
+
+    res.json({
+      success: true,
+      text: aiResponseText
+    });
+  } catch (error) {
+    console.error('Error with Gemini AI:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to generate response.',
       error: error.message
     });
   }
