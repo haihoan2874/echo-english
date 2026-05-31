@@ -3,6 +3,9 @@ import { Mic, Square, Volume2, Loader2, Send } from 'lucide-react';
 import { GoogleGenerativeAI } from '@google/generative-ai';
 import toast from 'react-hot-toast';
 import { useChatStore } from '../store/chatStore';
+import { TextToSpeech } from '@capacitor-community/text-to-speech';
+import { SpeechRecognition } from '@capacitor-community/speech-recognition';
+import { Capacitor } from '@capacitor/core';
 
 const getSystemInstruction = (level) => `You are a friendly, encouraging English conversation partner for an English learner. 
 Your primary goal is to KEEP THE CONVERSATION GOING and ENCOURAGE THE USER TO SPEAK.
@@ -20,108 +23,71 @@ const AIChatPage = () => {
   const [isListening, setIsListening] = useState(false);
   const [isAIThinking, setIsAIThinking] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);
-  const [recognitionInstance, setRecognitionInstance] = useState(null);
+  const [hasSpeechPermission, setHasSpeechPermission] = useState(false);
   
   // The text input that users can edit before sending
   const [draftMessage, setDraftMessage] = useState('');
   
   const chatEndRef = useRef(null);
-  const chatSessionRef = useRef(null);
-  const synthRef = useRef(window.speechSynthesis);
-
-  // Removed chatSessionRef as we now use stateless backend calls
 
   // Auto-scroll to bottom
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: 'smooth' });
   }, [messages, isAIThinking]);
 
-  // Handle Speech Recognition setup
+  // Request Speech Permissions and add Listeners on mount
   useEffect(() => {
-    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
-    if (SpeechRecognition) {
-      const recognition = new SpeechRecognition();
-      recognition.lang = 'en-US';
-      recognition.continuous = true; // Lắng nghe liên tục, không tự ngắt
-      recognition.interimResults = true; // Allow interim results so user sees text as they speak
-      recognition.maxAlternatives = 1;
-      
-      // Store final transcript safely
-      let finalTranscript = '';
-
-      recognition.onstart = () => {
-        setIsListening(true);
-        finalTranscript = ''; 
-      };
-      
-      recognition.onresult = (event) => {
-        let interimTranscript = '';
-        let currentFinal = '';
-
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            currentFinal += event.results[i][0].transcript;
+    const initSpeech = async () => {
+      try {
+        if (Capacitor.isNativePlatform()) {
+          const { speechRecognition } = await SpeechRecognition.checkPermissions();
+          if (speechRecognition !== 'granted') {
+            const { speechRecognition: req } = await SpeechRecognition.requestPermissions();
+            setHasSpeechPermission(req === 'granted');
           } else {
-            interimTranscript += event.results[i][0].transcript;
+            setHasSpeechPermission(true);
           }
+        } else {
+          setHasSpeechPermission(true); // Web fallback
         }
-        
-        if (currentFinal) {
-          finalTranscript += ' ' + currentFinal;
-        }
+      } catch (e) {
+        console.error("Speech Init Error:", e);
+      }
+    };
+    initSpeech();
 
-        // Combine the existing draft (before we started recording this chunk), plus new speech
-        // We append to whatever was already in draftMessage when recording started
-        // Actually, to make it simple: just overwrite the draft with the spoken text, 
-        // or append it if draft wasn't empty.
-        setDraftMessage(prev => {
-          // If prev is not empty and doesn't end with space, add a space
-          const prefix = prev.length > 0 && !prev.endsWith(' ') ? prev + ' ' : prev;
-          
-          // Only update if it's a final result or we are showing interim.
-          // For simplicity and less bugginess with React state in events, 
-          // let's just append the final transcript when speech ends, OR use a simpler approach.
-          return currentFinal ? prefix + currentFinal.trim() : prev;
-        });
-      };
-      
-      recognition.onspeechend = () => {
-        // Không tự động stop() nữa để người dùng ngắc ngứ thoải mái
-      };
-      
-      recognition.onend = () => {
-        setIsListening(false);
-      };
-      
-      recognition.onerror = (event) => {
-        console.error("Speech recognition error:", event.error);
-        setIsListening(false);
-      };
-      
-      setRecognitionInstance(recognition);
-    } else {
-      toast.error('Trình duyệt không hỗ trợ nhận diện giọng nói. Hãy dùng Chrome.');
-    }
-
+    // Cleanup when component unmounts
     return () => {
-      synthRef.current.cancel(); 
+      TextToSpeech.stop().catch(() => {});
+      if (Capacitor.isNativePlatform()) {
+        SpeechRecognition.stop().catch(() => {});
+        SpeechRecognition.removeAllListeners().catch(() => {});
+      }
     };
   }, []);
 
-  // Simpler approach for STT: non-interim, just append when they stop talking
+  // Listen for speech results
   useEffect(() => {
-    if (recognitionInstance) {
-       recognitionInstance.interimResults = false;
-       recognitionInstance.onresult = (event) => {
-         const transcript = event.results[0][0].transcript;
-         setDraftMessage(prev => {
-           const prefix = (prev && !prev.endsWith(' ')) ? prev + ' ' : prev;
-           return prefix + transcript;
-         });
-       };
+    if (Capacitor.isNativePlatform() && hasSpeechPermission) {
+      const addListeners = async () => {
+        await SpeechRecognition.removeAllListeners();
+        await SpeechRecognition.addListener('partialResults', (data) => {
+          if (data.matches && data.matches.length > 0) {
+            // For partial, we might just append or replace
+            // To keep simple, we can just use the final result or update draft
+            // If we want real-time we would handle it carefully.
+            // Let's just use final result for simplicity on Native.
+          }
+        });
+        
+        await SpeechRecognition.addListener('listeningState', (data) => {
+          if (data.status === 'started') setIsListening(true);
+          if (data.status === 'stopped') setIsListening(false);
+        });
+      };
+      addListeners();
     }
-  }, [recognitionInstance]);
-
+  }, [hasSpeechPermission]);
 
   const initChat = async () => {
     setHasStarted(true);
@@ -169,7 +135,7 @@ const AIChatPage = () => {
     
     // Stop listening if it was listening
     if (isListening) {
-      recognitionInstance?.stop();
+      stopMic();
     }
     
     try {
@@ -193,42 +159,85 @@ const AIChatPage = () => {
     }
   };
 
-  const speakText = (text) => {
-    if (!synthRef.current) return;
-    synthRef.current.cancel(); 
-    
-    const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = 'en-US';
-    utterance.rate = 0.9;
-    
-    const voices = synthRef.current.getVoices();
-    const usVoice = voices.find(v => v.lang === 'en-US' && v.name.includes('Google')) || voices.find(v => v.lang === 'en-US');
-    if (usVoice) utterance.voice = usVoice;
-
-    utterance.onstart = () => setIsSpeaking(true);
-    utterance.onend = () => setIsSpeaking(false);
-    utterance.onerror = () => setIsSpeaking(false);
-
-    synthRef.current.speak(utterance);
+  const speakText = async (text) => {
+    try {
+      setIsSpeaking(true);
+      await TextToSpeech.speak({
+        text: text,
+        lang: 'en-US',
+        rate: 1.0,
+        pitch: 1.0,
+        volume: 1.0,
+      });
+    } catch (error) {
+      console.error("TTS Error:", error);
+      toast.error("Không thể phát âm thanh.");
+    } finally {
+      setIsSpeaking(false);
+    }
   };
 
-  const toggleMic = (e) => {
+  const stopMic = async () => {
+    if (Capacitor.isNativePlatform()) {
+      try {
+        await SpeechRecognition.stop();
+        setIsListening(false);
+      } catch(e){}
+    }
+  };
+
+  const toggleMic = async (e) => {
     e?.preventDefault();
     if (isListening) {
-      recognitionInstance?.stop();
+      stopMic();
     } else {
       if (isSpeaking) {
-        synthRef.current.cancel();
+        await TextToSpeech.stop();
         setIsSpeaking(false);
       }
-      recognitionInstance?.start();
+      
+      if (Capacitor.isNativePlatform()) {
+        if (!hasSpeechPermission) {
+          toast.error("Vui lòng cấp quyền Microphone để sử dụng tính năng này.");
+          return;
+        }
+        try {
+          setIsListening(true);
+          const { matches } = await SpeechRecognition.start({
+            language: "en-US",
+            maxResults: 1,
+            prompt: "Say something",
+            partialResults: false,
+            popup: false,
+          });
+          if (matches && matches.length > 0) {
+            setDraftMessage(prev => {
+              const prefix = (prev && !prev.endsWith(' ')) ? prev + ' ' : prev;
+              return prefix + matches[0];
+            });
+          }
+        } catch (error) {
+          console.error("Speech Recog Error:", error);
+        } finally {
+          setIsListening(false);
+        }
+      } else {
+        toast.error("Tính năng nghe Mic hiện chỉ hỗ trợ trên App điện thoại.");
+      }
     }
+  };
+
+  const handleEndChat = async () => {
+    try {
+      await TextToSpeech.stop();
+    } catch (e) {}
+    resetChat();
+    toast.success('Đã kết thúc cuộc trò chuyện');
   };
 
   if (!hasStarted) {
     return (
       <div className="relative flex flex-col items-center justify-center min-h-screen bg-slate-900 overflow-hidden px-5">
-        {/* Decorative Background Glows */}
         <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/30 rounded-full blur-[100px] pointer-events-none"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-600/30 rounded-full blur-[100px] pointer-events-none"></div>
         
@@ -271,20 +280,16 @@ const AIChatPage = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-slate-50 pb-[100px]">
+    <div className="flex flex-col min-h-[100dvh] bg-slate-50 pb-[120px]">
       {/* Header */}
-      <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 text-slate-800 px-4 h-16 flex items-center justify-between sticky top-0 z-40 shadow-sm">
+      <header className="bg-white/90 backdrop-blur-xl border-b border-slate-200/60 text-slate-800 px-4 h-16 flex items-center justify-between fixed top-0 w-full z-50 shadow-sm">
         <h1 className="font-bold text-lg flex items-center gap-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
           <Volume2 className="text-blue-600 animate-pulse" size={20} />
           AI Tutor
         </h1>
         
         <button 
-          onClick={() => {
-            synthRef.current?.cancel();
-            resetChat();
-            toast.success('Đã kết thúc cuộc trò chuyện');
-          }}
+          onClick={handleEndChat}
           className="px-4 py-2 bg-rose-50 text-rose-600 rounded-full hover:bg-rose-100 transition-colors text-sm font-bold flex items-center gap-1.5"
         >
           <Square size={14} className="fill-current" />
@@ -292,8 +297,8 @@ const AIChatPage = () => {
         </button>
       </header>
 
-      {/* Chat Area */}
-      <div className="p-4 space-y-6 mb-24">
+      {/* Chat Area - Added mt-16 to avoid hiding under fixed header */}
+      <div className="p-4 space-y-6 mt-16 flex-1">
         {messages.filter(m => !(m.role === 'user' && m.text === "Hello, let's start our conversation.")).map((msg, idx) => (
           <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div 
@@ -319,7 +324,7 @@ const AIChatPage = () => {
       </div>
 
       {/* Input Control Area */}
-      <div className="fixed bottom-[64px] left-0 right-0 p-3 z-20 pointer-events-none">
+      <div className="fixed bottom-[64px] left-0 right-0 p-3 z-40 pointer-events-none">
         <div className="max-w-3xl mx-auto pointer-events-auto bg-white/90 backdrop-blur-xl border border-slate-200/60 p-3 rounded-3xl shadow-[0_-5px_40px_rgba(0,0,0,0.08)]">
           
           {/* Status text */}

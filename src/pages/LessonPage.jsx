@@ -9,7 +9,7 @@ import { useVocabStore } from '../store/vocabStore';
 import { useHistoryStore } from '../store/historyStore';
 
 // Merge short transcript chunks into natural sentences
-// (chunks closer than 1.5s gap are joined together)
+// (chunks closer than 1.5s gap are joined together, but we also break at punctuation or if too long)
 const mergeTranscriptChunks = (chunks, gapThreshold = 1.5) => {
   if (!chunks || chunks.length === 0) return [];
   const merged = [];
@@ -19,7 +19,11 @@ const mergeTranscriptChunks = (chunks, gapThreshold = 1.5) => {
     const chunk = chunks[i];
     const gap = chunk.start - (current.start + (current.duration || 1));
     
-    if (gap < gapThreshold) {
+    // Check if current chunk already looks like a complete sentence or is too long
+    const isCompleteSentence = /[.!?]$/.test(current.text.trim());
+    const isTooLong = current.text.length > 80;
+
+    if (gap < gapThreshold && !isCompleteSentence && !isTooLong) {
       // Merge: append text, extend duration
       current.text = current.text.trimEnd() + ' ' + chunk.text.trimStart();
       current.duration = (chunk.start + (chunk.duration || 1)) - current.start;
