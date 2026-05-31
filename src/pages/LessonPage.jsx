@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import YouTube from 'react-youtube';
-import { ChevronLeft, Plus, X, Loader2, RefreshCcw, Headphones, Mic, MicOff } from 'lucide-react';
+import { ChevronLeft, Plus, X, Loader2, RefreshCcw, Headphones, Mic, MicOff, FileText } from 'lucide-react';
 import axios from 'axios';
 import { YoutubeTranscript } from 'youtube-transcript';
 import toast from 'react-hot-toast';
@@ -508,12 +508,17 @@ const LessonPage = () => {
             <p>Đang trích xuất phụ đề...</p>
           </div>
         ) : transcriptError ? (
-          <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-3 text-center px-4">
-            <div className="bg-red-500/10 p-4 rounded-full">
-              <X className="text-red-500 w-8 h-8" />
+          <div className="flex flex-col items-center justify-center h-full text-slate-400 gap-3 text-center px-6">
+            <div className="bg-slate-800 p-4 rounded-full mb-2 shadow-inner">
+              <FileText className="text-slate-500 w-8 h-8" />
             </div>
-            <p className="text-red-400 font-medium">{transcriptError}</p>
-            <button onClick={() => window.location.reload()} className="flex items-center gap-2 mt-4 bg-slate-800 px-4 py-2 rounded-lg hover:bg-slate-700 text-white transition-colors">
+            <p className="text-slate-300 font-medium text-lg">
+              Video này không có phụ đề CC
+            </p>
+            <p className="text-slate-500 text-sm mb-2">
+              Có thể video đã được gắn sẵn phụ đề vào hình, hoặc YouTube không hỗ trợ đọc phụ đề cho video này. Bạn vẫn có thể xem và nghe bình thường!
+            </p>
+            <button onClick={() => window.location.reload()} className="flex items-center gap-2 mt-4 bg-slate-800/80 border border-slate-700 px-6 py-2.5 rounded-full hover:bg-slate-700 text-slate-300 transition-colors font-medium">
               <RefreshCcw size={16} /> Thử lại
             </button>
           </div>
