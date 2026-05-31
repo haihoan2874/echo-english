@@ -282,7 +282,7 @@ const AIChatPage = () => {
   return (
     <div className="flex flex-col h-[calc(100dvh-64px)] bg-slate-50 overflow-hidden">
       {/* Header */}
-      <header className="bg-white border-b border-slate-200/60 text-slate-800 px-4 h-16 flex items-center justify-between sticky top-0 w-full z-50 shadow-sm shrink-0">
+      <header className="bg-white border-b border-slate-200/60 text-slate-800 px-4 h-16 flex items-center justify-between relative z-50 shadow-md shrink-0">
         <h1 className="font-bold text-lg flex items-center gap-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
           <Volume2 className="text-blue-600 animate-pulse" size={20} />
           AI Tutor
