@@ -10,13 +10,17 @@ export default defineConfig({
   ],
   server: {
     host: true,
-    port: 5174,
-    strictPort: true,
     proxy: {
       '/api/youtube': {
         target: 'https://www.youtube.com',
         changeOrigin: true,
-        rewrite: (path) => path.replace(/^\/api\/youtube/, '')
+        rewrite: (path) => path.replace(/^\/api\/youtube/, ''),
+        configure: (proxy, _options) => {
+          proxy.on('proxyReq', (proxyReq, req, _res) => {
+            proxyReq.removeHeader('Origin');
+            proxyReq.removeHeader('Referer');
+          });
+        }
       },
       '/api/gemini': {
         target: 'https://generativelanguage.googleapis.com',
