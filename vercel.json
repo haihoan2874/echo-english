@@ -2,7 +2,7 @@
   "rewrites": [
     {
       "source": "/api/(.*)",
-      "destination": "https://echoenglish-hoan.loca.lt/api/$1"
+      "destination": "https://echoenglish-api.loca.lt/api/$1"
     },
     {
       "source": "/(.*)",
