@@ -332,7 +332,7 @@ const LessonPage = () => {
           setTranscriptError(res.data.message);
         }
       } catch (err) {
-        setTranscriptError('Không thể tải phụ đề. Hãy chắc chắn Backend đang chạy ở cổng 3001 và video có phụ đề tiếng Anh.');
+        setTranscriptError('Không thể tải phụ đề từ video này. Có thể video không có phụ đề CC (chỉ có phụ đề gắn cứng vào hình), hoặc bị YouTube giới hạn máy chủ.');
       } finally {
         setLoadingTranscript(false);
       }
