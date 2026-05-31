@@ -133,6 +133,8 @@ const AIChatPage = () => {
         message: "Hello, let's start our conversation.",
         history: [],
         systemInstruction: getSystemInstruction(level)
+      }, {
+        headers: { 'Bypass-Tunnel-Reminder': 'true' }
       });
       
       if (res.data.success) {
@@ -174,6 +176,8 @@ const AIChatPage = () => {
         message: textToSend,
         history: history,
         systemInstruction: getSystemInstruction(level)
+      }, {
+        headers: { 'Bypass-Tunnel-Reminder': 'true' }
       });
       
       if (res.data.success) {

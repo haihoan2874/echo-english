@@ -1,7 +1,7 @@
 import { YoutubeTranscript } from 'youtube-transcript';
 async function test() {
   try {
-    const res = await YoutubeTranscript.fetchTranscript('n20wYm0qP10');
+    const res = await YoutubeTranscript.fetchTranscript('zwoz8yzTtZA');
     console.log("Success, found", res.length, "lines");
   } catch(e) {
     console.log("Error:", e.message);

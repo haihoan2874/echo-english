@@ -323,7 +323,9 @@ const LessonPage = () => {
       try {
         setLoadingTranscript(true);
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-        const res = await axios.get(`${apiUrl}/api/transcript/${id}`);
+        const res = await axios.get(`${apiUrl}/api/transcript/${id}`, {
+          headers: { 'Bypass-Tunnel-Reminder': 'true' }
+        });
         if (res.data.success) {
           // Merge short chunks into natural sentences before storing
           const merged = mergeTranscriptChunks(res.data.data, 1.5);
