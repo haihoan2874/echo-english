@@ -81,7 +81,7 @@ const HomePage = () => {
     <div className="pb-24 bg-slate-50 min-h-full flex flex-col relative">
       
       {/* Sticky Header Section */}
-      <div className="sticky top-0 z-40 bg-slate-50 shadow-sm">
+      <div className="sticky top-0 z-40 bg-slate-50">
         <div ref={headerRef} className="bg-slate-900 text-white rounded-b-[40px] px-6 pt-8 pb-12 shadow-lg relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           
