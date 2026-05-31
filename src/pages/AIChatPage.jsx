@@ -146,10 +146,15 @@ const AIChatPage = () => {
     
     try {
       const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+      const requestOptions = {};
+      if (!Capacitor.isNativePlatform()) {
+        requestOptions.baseUrl = `${window.location.origin}/api/gemini`;
+      }
+
       const model = genAI.getGenerativeModel({ 
-        model: "gemini-2.5-flash",
+        model: "gemini-3.5-flash",
         systemInstruction: getSystemInstruction(level) 
-      });
+      }, requestOptions);
 
       const chatSession = model.startChat({ history: history });
       const result = await chatSession.sendMessage(textToSend);
