@@ -10,7 +10,14 @@ import AIChatPage from './pages/AIChatPage';
 function App() {
   return (
     <BrowserRouter>
-      <Toaster position="top-center" toastOptions={{ duration: 3000, style: { borderRadius: '12px', background: '#333', color: '#fff' } }} />
+      <Toaster 
+        position="top-center" 
+        toastOptions={{ 
+          duration: 3000, 
+          style: { borderRadius: '12px', background: '#333', color: '#fff' } 
+        }} 
+        containerStyle={{ top: 80 }}
+      />
       
       {/* Global Watermark */}
       <div className="fixed top-3 right-3 pointer-events-none z-[9999] opacity-30 flex items-center gap-1.5 mix-blend-difference text-white drop-shadow-md">
