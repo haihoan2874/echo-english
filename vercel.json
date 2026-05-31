@@ -1,12 +1,8 @@
 {
   "rewrites": [
     {
-      "source": "/api/transcript/:id",
-      "destination": "/api/transcript?id=:id"
-    },
-    {
-      "source": "/api/chat",
-      "destination": "/api/chat"
+      "source": "/api/(.*)",
+      "destination": "https://onscreen-sneak-disabled.ngrok-free.dev/api/$1"
     },
     {
       "source": "/(.*)",
