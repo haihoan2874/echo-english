@@ -99,10 +99,16 @@ const AIChatPage = () => {
     
     try {
       const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+      const requestOptions = {};
+      // If running on Web (dev), proxy through Vite to avoid connection/CORS issues
+      if (!Capacitor.isNativePlatform()) {
+        requestOptions.baseUrl = `${window.location.origin}/api/gemini`;
+      }
+
       const model = genAI.getGenerativeModel({ 
         model: "gemini-2.5-flash",
         systemInstruction: getSystemInstruction(level) 
-      });
+      }, requestOptions);
 
       const chatSession = model.startChat({ history: [] });
       const result = await chatSession.sendMessage("Hello, let's start our conversation.");
@@ -112,7 +118,7 @@ const AIChatPage = () => {
       speakText(aiResponseText);
     } catch (error) {
       console.error("Error initializing AI:", error);
-      toast.error('Lỗi kết nối tới AI. Hãy kiểm tra server.');
+      toast.error(`Lỗi kết nối tới AI: ${error.message}`);
     } finally {
       setIsAIThinking(false);
     }
