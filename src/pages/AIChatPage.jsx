@@ -233,38 +233,45 @@ const AIChatPage = () => {
 
   if (!hasStarted) {
     return (
-      <div className="flex flex-col items-center justify-center h-screen bg-slate-900 text-white p-6 pb-24">
-        <div className="w-20 h-20 bg-primary/20 rounded-full flex items-center justify-center mb-6">
-          <Volume2 className="text-primary" size={40} />
-        </div>
-        <h1 className="text-3xl font-extrabold mb-2 text-center">AI English Tutor</h1>
-        <p className="text-slate-400 text-center mb-10 max-w-xs">Giao tiếp tiếng Anh tự nhiên với AI. Không lo bị ngắt lời!</p>
+      <div className="relative flex flex-col items-center justify-center min-h-screen bg-slate-900 overflow-hidden px-5">
+        {/* Decorative Background Glows */}
+        <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/30 rounded-full blur-[100px] pointer-events-none"></div>
+        <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-600/30 rounded-full blur-[100px] pointer-events-none"></div>
         
-        <div className="bg-slate-800 p-6 rounded-3xl w-full max-w-sm mb-8 border border-slate-700 shadow-xl">
-          <p className="text-sm font-semibold text-slate-300 mb-3 uppercase tracking-wider">Trình độ của bạn</p>
-          <div className="space-y-2">
-            {['Beginner (A1)', 'Pre-Intermediate (A2)', 'Intermediate (B1)', 'Advanced (B2)'].map(lvl => (
-              <button
-                key={lvl}
-                onClick={() => setLevel(lvl)}
-                className={`w-full text-left px-4 py-3 rounded-xl transition-all font-medium border ${
-                  level === lvl 
-                    ? 'bg-primary border-primary text-white shadow-lg shadow-primary/20' 
-                    : 'bg-slate-900 border-slate-700 text-slate-400 hover:bg-slate-800'
-                }`}
-              >
-                {lvl}
-              </button>
-            ))}
+        <div className="relative z-10 flex flex-col items-center w-full max-w-sm">
+          <div className="w-24 h-24 bg-gradient-to-tr from-blue-500 to-purple-600 rounded-full flex items-center justify-center mb-6 shadow-[0_0_30px_rgba(59,130,246,0.4)] animate-[pulse_3s_ease-in-out_infinite]">
+            <Volume2 className="text-white" size={48} />
           </div>
-        </div>
+          
+          <h1 className="text-4xl font-extrabold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-purple-400 text-center tracking-tight">AI English Tutor</h1>
+          <p className="text-slate-300 text-center mb-10 font-medium">Giao tiếp tiếng Anh tự nhiên. Không lo ngắt lời!</p>
+          
+          <div className="w-full bg-white/5 backdrop-blur-xl p-7 rounded-[2rem] mb-8 border border-white/10 shadow-2xl">
+            <p className="text-xs font-bold text-slate-400 mb-4 uppercase tracking-widest text-center">Trình độ của bạn</p>
+            <div className="space-y-3">
+              {['Beginner (A1)', 'Pre-Intermediate (A2)', 'Intermediate (B1)', 'Advanced (B2)'].map(lvl => (
+                <button
+                  key={lvl}
+                  onClick={() => setLevel(lvl)}
+                  className={`w-full text-left px-5 py-4 rounded-2xl transition-all duration-300 font-semibold ${
+                    level === lvl 
+                      ? 'bg-gradient-to-r from-blue-500 to-purple-600 text-white shadow-lg shadow-blue-500/30 scale-[1.02] border-transparent' 
+                      : 'bg-white/5 border border-white/10 text-slate-300 hover:bg-white/10 hover:scale-[1.01]'
+                  }`}
+                >
+                  {lvl}
+                </button>
+              ))}
+            </div>
+          </div>
 
-        <button 
-          onClick={initChat}
-          className="w-full max-w-sm bg-white text-slate-900 font-bold py-4 rounded-2xl hover:bg-slate-200 transition-colors shadow-xl"
-        >
-          Bắt đầu nói chuyện
-        </button>
+          <button 
+            onClick={initChat}
+            className="w-full bg-white text-slate-900 font-bold py-4 rounded-2xl hover:bg-slate-100 active:scale-95 transition-all shadow-[0_0_20px_rgba(255,255,255,0.2)] text-lg"
+          >
+            Bắt đầu trò chuyện
+          </button>
+        </div>
       </div>
     );
   }
@@ -272,10 +279,10 @@ const AIChatPage = () => {
   return (
     <div className="flex flex-col min-h-screen bg-slate-50 pb-[100px]">
       {/* Header */}
-      <header className="bg-slate-900 text-white px-4 h-16 flex items-center justify-between shadow-md sticky top-0 z-40">
-        <h1 className="font-bold text-lg flex items-center gap-2">
-          <Volume2 className="text-primary animate-pulse" size={20} />
-          AI English Tutor
+      <header className="bg-white/80 backdrop-blur-xl border-b border-slate-200/60 text-slate-800 px-4 h-16 flex items-center justify-between sticky top-0 z-40 shadow-sm">
+        <h1 className="font-bold text-lg flex items-center gap-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
+          <Volume2 className="text-blue-600 animate-pulse" size={20} />
+          AI Tutor
         </h1>
         
         <button 
@@ -284,7 +291,7 @@ const AIChatPage = () => {
             resetChat();
             toast.success('Đã kết thúc cuộc trò chuyện');
           }}
-          className="px-3 py-1.5 bg-red-500/20 text-red-400 rounded-full hover:bg-red-500/30 transition-colors text-sm font-medium flex items-center gap-1"
+          className="px-4 py-2 bg-rose-50 text-rose-600 rounded-full hover:bg-rose-100 transition-colors text-sm font-bold flex items-center gap-1.5"
         >
           <Square size={14} className="fill-current" />
           Kết thúc
@@ -296,10 +303,10 @@ const AIChatPage = () => {
         {messages.filter(m => !(m.role === 'user' && m.text === "Hello, let's start our conversation.")).map((msg, idx) => (
           <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div 
-              className={`max-w-[85%] rounded-2xl px-5 py-3 text-lg leading-relaxed shadow-sm ${
+              className={`max-w-[85%] px-5 py-3.5 text-[15px] sm:text-base leading-relaxed shadow-sm ${
                 msg.role === 'user' 
-                  ? 'bg-primary text-white rounded-tr-none' 
-                  : 'bg-white text-slate-800 border border-slate-200 rounded-tl-none'
+                  ? 'bg-gradient-to-br from-blue-500 to-indigo-600 text-white rounded-2xl rounded-tr-sm' 
+                  : 'bg-white border border-slate-200/60 text-slate-700 rounded-2xl rounded-tl-sm shadow-[0_2px_10px_rgba(0,0,0,0.02)]'
               }`}
             >
               {msg.text}
@@ -309,8 +316,8 @@ const AIChatPage = () => {
         
         {isAIThinking && (
           <div className="flex justify-start">
-            <div className="bg-white border border-slate-200 rounded-2xl rounded-tl-none px-5 py-4 shadow-sm flex items-center gap-2 text-slate-500">
-              <Loader2 size={18} className="animate-spin" /> AI đang suy nghĩ...
+            <div className="bg-white border border-slate-200/60 rounded-2xl rounded-tl-sm px-5 py-3 shadow-sm flex items-center gap-2.5 text-slate-500 text-sm font-medium">
+              <Loader2 size={16} className="animate-spin text-blue-500" /> AI đang suy nghĩ...
             </div>
           </div>
         )}
@@ -318,48 +325,51 @@ const AIChatPage = () => {
       </div>
 
       {/* Input Control Area */}
-      <div className="fixed bottom-[64px] left-0 right-0 bg-white p-3 border-t border-slate-100 flex flex-col gap-2 shadow-[0_-10px_30px_rgba(0,0,0,0.05)] z-20">
-        
-        {/* Status text */}
-        <div className="text-xs font-medium text-slate-500 text-center px-4 -mt-1 h-4">
-          {isSpeaking ? 'AI đang nói...' : isListening ? 'Đang nghe... (Nói xong tự điền vào khung dưới)' : ''}
-        </div>
+      <div className="fixed bottom-[64px] left-0 right-0 p-3 z-20 pointer-events-none">
+        <div className="max-w-3xl mx-auto pointer-events-auto bg-white/90 backdrop-blur-xl border border-slate-200/60 p-3 rounded-3xl shadow-[0_-5px_40px_rgba(0,0,0,0.08)]">
+          
+          {/* Status text */}
+          <div className="text-[11px] font-bold tracking-wide uppercase text-slate-400 text-center px-4 mb-2 h-4 flex items-center justify-center">
+            {isSpeaking ? <span className="text-blue-500 flex items-center gap-1"><Volume2 size={12}/> AI đang nói...</span> : isListening ? <span className="text-red-500 animate-pulse flex items-center gap-1"><Mic size={12}/> Đang nghe... (Bấm Mic để gửi)</span> : ''}
+          </div>
 
-        <form onSubmit={handleSendDraft} className="flex gap-2 w-full max-w-md mx-auto items-end">
-          <button 
-            type="button"
-            onClick={toggleMic}
-            className={`p-3 rounded-xl shrink-0 transition-all ${
-              isListening 
-                ? 'bg-red-500 text-white animate-pulse shadow-red-500/40 shadow-lg' 
-                : 'bg-slate-100 text-slate-600 hover:bg-slate-200'
-            }`}
-          >
-            {isListening ? <Square size={24} className="fill-current" /> : <Mic size={24} />}
-          </button>
-          
-          <textarea
-            value={draftMessage}
-            onChange={(e) => setDraftMessage(e.target.value)}
-            placeholder="Nói hoặc gõ phím..."
-            className="flex-1 bg-slate-50 border border-slate-200 rounded-xl px-3 py-3 text-base focus:outline-none focus:border-primary resize-none h-12"
-            rows="1"
-            onKeyDown={(e) => {
-              if (e.key === 'Enter' && !e.shiftKey) {
-                e.preventDefault();
-                handleSendDraft();
-              }
-            }}
-          />
-          
-          <button 
-            type="submit"
-            disabled={!draftMessage.trim() || isAIThinking}
-            className="p-3 bg-primary text-white rounded-xl shrink-0 hover:bg-blue-600 disabled:opacity-50 disabled:bg-slate-300 transition-colors shadow-lg shadow-blue-500/30"
-          >
-            <Send size={24} />
-          </button>
-        </form>
+          <form onSubmit={handleSendDraft} className="flex gap-2 items-end">
+            <button 
+              type="button"
+              onClick={toggleMic}
+              className={`p-3.5 rounded-2xl shrink-0 transition-all duration-300 ${
+                isListening 
+                  ? 'bg-red-500 text-white shadow-lg shadow-red-500/30 scale-105' 
+                  : 'bg-slate-100 text-slate-600 hover:bg-slate-200 hover:scale-105'
+              }`}
+            >
+              {isListening ? <Square size={22} className="fill-current" /> : <Mic size={22} />}
+            </button>
+            
+            <textarea
+              value={draftMessage}
+              onChange={(e) => setDraftMessage(e.target.value)}
+              placeholder="Nói hoặc gõ phím..."
+              className="flex-1 bg-slate-50 border border-slate-200/80 rounded-2xl px-4 py-3.5 text-[15px] focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 resize-none transition-all"
+              rows="1"
+              onKeyDown={(e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                  e.preventDefault();
+                  handleSendDraft();
+                }
+              }}
+              style={{ minHeight: '52px', maxHeight: '120px' }}
+            />
+            
+            <button 
+              type="submit"
+              disabled={!draftMessage.trim() || isAIThinking}
+              className="p-3.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white rounded-2xl shrink-0 hover:opacity-90 disabled:opacity-50 disabled:from-slate-300 disabled:to-slate-300 transition-all shadow-lg shadow-blue-500/25 disabled:shadow-none hover:scale-105 active:scale-95"
+            >
+              <Send size={22} />
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
