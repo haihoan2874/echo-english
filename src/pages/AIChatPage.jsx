@@ -280,7 +280,7 @@ const AIChatPage = () => {
   }
 
   return (
-    <div className="flex flex-col min-h-[100dvh] bg-slate-50 pb-[120px]">
+    <div className="flex flex-col h-[calc(100dvh-64px)] bg-slate-50 overflow-hidden">
       {/* Header */}
       <header className="bg-white border-b border-slate-200/60 text-slate-800 px-4 h-16 flex items-center justify-between sticky top-0 w-full z-50 shadow-sm shrink-0">
         <h1 className="font-bold text-lg flex items-center gap-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
@@ -298,7 +298,7 @@ const AIChatPage = () => {
       </header>
 
       {/* Chat Area */}
-      <div className="p-4 pt-6 space-y-6 flex-1 max-w-3xl mx-auto w-full">
+      <div className="p-4 pt-6 pb-[120px] space-y-6 flex-1 max-w-3xl mx-auto w-full overflow-y-auto">
         {messages.filter(m => !(m.role === 'user' && m.text === "Hello, let's start our conversation.")).map((msg, idx) => (
           <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div 
