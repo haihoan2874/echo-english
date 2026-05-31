@@ -85,7 +85,7 @@ const HomePage = () => {
         <div ref={headerRef} className="bg-slate-900 text-white rounded-b-[40px] px-6 pt-8 pb-12 shadow-lg relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           
-          <div className="relative z-10">
+          <div className="relative z-10 max-w-md mx-auto w-full">
             <header className="mb-8 flex items-center gap-4">
               <LogoSVG />
               <div>

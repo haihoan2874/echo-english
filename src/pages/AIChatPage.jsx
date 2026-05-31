@@ -298,7 +298,7 @@ const AIChatPage = () => {
       </header>
 
       {/* Chat Area - Added mt-16 to avoid hiding under fixed header */}
-      <div className="p-4 space-y-6 mt-16 flex-1">
+      <div className="p-4 space-y-6 mt-16 flex-1 max-w-3xl mx-auto w-full">
         {messages.filter(m => !(m.role === 'user' && m.text === "Hello, let's start our conversation.")).map((msg, idx) => (
           <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div 
