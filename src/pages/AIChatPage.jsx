@@ -42,6 +42,7 @@ const AIChatPage = () => {
     if (SpeechRecognition) {
       const recognition = new SpeechRecognition();
       recognition.lang = 'en-US';
+      recognition.continuous = true; // Lắng nghe liên tục, không tự ngắt
       recognition.interimResults = true; // Allow interim results so user sees text as they speak
       recognition.maxAlternatives = 1;
       
@@ -85,7 +86,10 @@ const AIChatPage = () => {
       };
       
       recognition.onspeechend = () => {
-        recognition.stop();
+        // Không tự động stop() nữa để người dùng ngắc ngứ thoải mái
+      };
+      
+      recognition.onend = () => {
         setIsListening(false);
       };
       
