@@ -282,7 +282,7 @@ const AIChatPage = () => {
   return (
     <div className="flex flex-col min-h-[100dvh] bg-slate-50 pb-[120px]">
       {/* Header */}
-      <header className="bg-white/90 backdrop-blur-xl border-b border-slate-200/60 text-slate-800 px-4 h-16 flex items-center justify-between fixed top-0 w-full z-50 shadow-sm">
+      <header className="bg-white border-b border-slate-200/60 text-slate-800 px-4 h-16 flex items-center justify-between sticky top-0 w-full z-50 shadow-sm shrink-0">
         <h1 className="font-bold text-lg flex items-center gap-2 bg-clip-text text-transparent bg-gradient-to-r from-blue-600 to-indigo-600">
           <Volume2 className="text-blue-600 animate-pulse" size={20} />
           AI Tutor
@@ -297,8 +297,8 @@ const AIChatPage = () => {
         </button>
       </header>
 
-      {/* Chat Area - Added mt-16 to avoid hiding under fixed header */}
-      <div className="p-4 space-y-6 mt-16 flex-1 max-w-3xl mx-auto w-full">
+      {/* Chat Area */}
+      <div className="p-4 pt-6 space-y-6 flex-1 max-w-3xl mx-auto w-full">
         {messages.filter(m => !(m.role === 'user' && m.text === "Hello, let's start our conversation.")).map((msg, idx) => (
           <div key={idx} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
             <div 
