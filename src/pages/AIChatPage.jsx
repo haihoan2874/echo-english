@@ -132,13 +132,16 @@ const AIChatPage = () => {
     addMessage('user', "Hello, let's start our conversation.");
     
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-      const res = await axios.post(`${apiUrl}/api/chat`, {
+      // Call relative API path which will be proxied by Vite (local) or Vercel (production)
+      const res = await axios.post(`/api/chat`, {
         message: "Hello, let's start our conversation.",
         history: [],
         systemInstruction: getSystemInstruction(level)
       }, {
-        headers: { 'Bypass-Tunnel-Reminder': 'true' }
+        headers: {
+          'Bypass-Tunnel-Reminder': 'true',
+          'ngrok-skip-browser-warning': '69420'
+        }
       });
       
       if (res.data.success) {
@@ -175,13 +178,15 @@ const AIChatPage = () => {
     }
     
     try {
-      // Call relative API path which will be proxied by Vite (local) or Vercel (production)
       const res = await axios.post(`/api/chat`, {
         message: textToSend,
         history: history,
         systemInstruction: getSystemInstruction(level)
       }, {
-        headers: { 'Bypass-Tunnel-Reminder': 'true' }
+        headers: {
+          'Bypass-Tunnel-Reminder': 'true',
+          'ngrok-skip-browser-warning': '69420'
+        }
       });
       
       if (res.data.success) {

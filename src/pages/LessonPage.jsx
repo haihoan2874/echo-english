@@ -334,7 +334,10 @@ const LessonPage = () => {
         setLoadingTranscript(true);
         // Call relative API path which will be proxied by Vite (local) or Vercel (production)
         const res = await axios.get(`/api/transcript/${id}`, {
-          headers: { 'Bypass-Tunnel-Reminder': 'true' }
+          headers: { 
+            'Bypass-Tunnel-Reminder': 'true',
+            'ngrok-skip-browser-warning': '69420'
+          }
         });
         if (res.data.success) {
           // Merge short chunks into natural sentences before storing
