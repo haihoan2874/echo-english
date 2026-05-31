@@ -78,10 +78,10 @@ const HomePage = () => {
   };
 
   return (
-    <div className="bg-slate-50 min-h-[100dvh] h-[100dvh] flex flex-col relative overflow-hidden">
+    <div className="pb-24 bg-slate-50 min-h-full flex flex-col relative">
       
       {/* Sticky Header Section */}
-      <div className="flex-none bg-slate-50 z-40">
+      <div className="sticky top-0 z-40 bg-slate-50 shadow-sm">
         <div ref={headerRef} className="bg-slate-900 text-white rounded-b-[40px] px-6 pt-8 pb-12 shadow-lg relative overflow-hidden">
           <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
           
@@ -108,7 +108,7 @@ const HomePage = () => {
       </div>
 
       {/* Scrollable Content Area */}
-      <div className="flex-1 overflow-y-auto px-4 max-w-md mx-auto w-full pt-4 pb-24 space-y-10">
+      <div className="flex-1 px-4 max-w-md mx-auto w-full pt-8 space-y-10">
         <HistoryCarousel />
         <PlaylistView />
       </div>
