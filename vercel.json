@@ -1,8 +1,12 @@
 {
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://echoenglish-api.loca.lt/api/$1"
+      "source": "/api/transcript/:id",
+      "destination": "/api/transcript?id=:id"
+    },
+    {
+      "source": "/api/chat",
+      "destination": "/api/chat"
     },
     {
       "source": "/(.*)",
