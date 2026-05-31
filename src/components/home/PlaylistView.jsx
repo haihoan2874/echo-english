@@ -30,35 +30,62 @@ const PlaylistView = () => {
   const handleDeletePlaylist = (e, playlist) => {
     e.stopPropagation();
     toast((t) => (
-      <div className="flex flex-col gap-2">
-        <p className="text-sm font-semibold text-slate-800">Xóa playlist "{playlist.name}"?</p>
-        <div className="flex gap-2 justify-end mt-2">
+      <div className="flex flex-col gap-3 min-w-[180px]">
+        <p className="text-sm font-semibold text-white text-center line-clamp-2">Xóa thư mục "{playlist.name}"?</p>
+        <div className="flex gap-2 justify-center">
           <button 
-            className="px-3 py-1.5 text-xs font-medium text-slate-500 bg-slate-100 rounded-md hover:bg-slate-200"
+            className="px-4 py-1.5 text-xs font-medium text-slate-300 bg-slate-700 rounded-full hover:bg-slate-600 hover:text-white transition-colors flex-1"
             onClick={() => toast.dismiss(t.id)}
           >
             Hủy
           </button>
           <button 
-            className="px-3 py-1.5 text-xs font-medium text-white bg-red-500 rounded-md hover:bg-red-600"
+            className="px-4 py-1.5 text-xs font-bold text-white bg-red-500 rounded-full hover:bg-red-600 transition-colors shadow-lg shadow-red-500/30 flex-1"
             onClick={() => {
               deletePlaylist(playlist.id);
               toast.dismiss(t.id);
-              toast.success('Đã xóa playlist!');
+              toast.success('Đã xóa!', { icon: '🗑️' });
             }}
           >
             Xóa
           </button>
         </div>
       </div>
-    ), { duration: 5000 });
+    ), { 
+      duration: 5000,
+      style: { background: '#1e293b', border: '1px solid #334155', padding: '16px', borderRadius: '16px' }
+    });
   };
 
   const handleRemoveVideo = (e, playlistId, videoId) => {
     e.preventDefault();
     e.stopPropagation();
-    removeVideoFromPlaylist(playlistId, videoId);
-    toast.success('Đã xóa khỏi playlist!');
+    toast((t) => (
+      <div className="flex flex-col gap-3 min-w-[180px]">
+        <p className="text-sm font-semibold text-white text-center">Xóa video khỏi danh sách?</p>
+        <div className="flex gap-2 justify-center">
+          <button 
+            className="px-4 py-1.5 text-xs font-medium text-slate-300 bg-slate-700 rounded-full hover:bg-slate-600 hover:text-white transition-colors flex-1"
+            onClick={() => toast.dismiss(t.id)}
+          >
+            Hủy
+          </button>
+          <button 
+            className="px-4 py-1.5 text-xs font-bold text-white bg-red-500 rounded-full hover:bg-red-600 transition-colors shadow-lg shadow-red-500/30 flex-1"
+            onClick={() => {
+              removeVideoFromPlaylist(playlistId, videoId);
+              toast.dismiss(t.id);
+              toast.success('Đã xóa!', { icon: '🗑️' });
+            }}
+          >
+            Xóa
+          </button>
+        </div>
+      </div>
+    ), { 
+      duration: 5000,
+      style: { background: '#1e293b', border: '1px solid #334155', padding: '16px', borderRadius: '16px' }
+    });
   };
 
   return (
@@ -132,7 +159,7 @@ const PlaylistView = () => {
                           </div>
                           <button 
                             onClick={(e) => handleRemoveVideo(e, playlist.id, video.videoId)}
-                            className="absolute right-2 top-1/2 -translate-y-1/2 text-slate-300 hover:text-red-500 bg-white p-1.5 rounded-full opacity-0 group-hover:opacity-100 transition-all shadow-sm border border-slate-100"
+                            className="absolute right-2 top-1/2 -translate-y-1/2 text-red-400 hover:text-red-600 bg-white p-1.5 rounded-full z-20 transition-all shadow-sm border border-slate-100"
                           >
                             <Trash2 size={16} />
                           </button>
