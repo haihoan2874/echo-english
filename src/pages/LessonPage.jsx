@@ -338,7 +338,7 @@ const LessonPage = () => {
 
         setLoadingTranscript(true);
         try {
-          const rawTranscript = await YoutubeTranscript.fetchTranscript(id);
+          const rawTranscript = await YoutubeTranscript.fetchTranscript(id, { lang: 'en' });
           const formattedTranscript = rawTranscript.map(item => ({
             id: Math.random().toString(36).substr(2, 9),
             text: item.text.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"'),
