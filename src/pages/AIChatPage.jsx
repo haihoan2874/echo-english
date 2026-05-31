@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Mic, Square, Volume2, Loader2, Send } from 'lucide-react';
-import axios from 'axios';
+import { GoogleGenerativeAI } from '@google/generative-ai';
 import toast from 'react-hot-toast';
 import { useChatStore } from '../store/chatStore';
 
@@ -132,23 +132,18 @@ const AIChatPage = () => {
     addMessage('user', "Hello, let's start our conversation.");
     
     try {
-      // Call relative API path which will be proxied by Vite (local) or Vercel (production)
-      const res = await axios.post(`/api/chat`, {
-        message: "Hello, let's start our conversation.",
-        history: [],
-        systemInstruction: getSystemInstruction(level)
-      }, {
-        headers: {
-          'Bypass-Tunnel-Reminder': 'true',
-          'ngrok-skip-browser-warning': '69420'
-        }
+      const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ 
+        model: "gemini-2.5-flash",
+        systemInstruction: getSystemInstruction(level) 
       });
-      
-      if (res.data.success) {
-        const aiResponseText = res.data.text;
-        addMessage('ai', aiResponseText);
-        speakText(aiResponseText);
-      }
+
+      const chatSession = model.startChat({ history: [] });
+      const result = await chatSession.sendMessage("Hello, let's start our conversation.");
+      const aiResponseText = result.response.text();
+
+      addMessage('ai', aiResponseText);
+      speakText(aiResponseText);
     } catch (error) {
       console.error("Error initializing AI:", error);
       toast.error('Lỗi kết nối tới AI. Hãy kiểm tra server.');
@@ -178,24 +173,18 @@ const AIChatPage = () => {
     }
     
     try {
-      const res = await axios.post(`/api/chat`, {
-        message: textToSend,
-        history: history,
-        systemInstruction: getSystemInstruction(level)
-      }, {
-        headers: {
-          'Bypass-Tunnel-Reminder': 'true',
-          'ngrok-skip-browser-warning': '69420'
-        }
+      const genAI = new GoogleGenerativeAI(import.meta.env.VITE_GEMINI_API_KEY);
+      const model = genAI.getGenerativeModel({ 
+        model: "gemini-2.5-flash",
+        systemInstruction: getSystemInstruction(level) 
       });
-      
-      if (res.data.success) {
-        const aiResponseText = res.data.text;
-        addMessage('ai', aiResponseText);
-        speakText(aiResponseText);
-      } else {
-        throw new Error(res.data.message);
-      }
+
+      const chatSession = model.startChat({ history: history });
+      const result = await chatSession.sendMessage(textToSend);
+      const aiResponseText = result.response.text();
+
+      addMessage('ai', aiResponseText);
+      speakText(aiResponseText);
     } catch (error) {
       console.error("AI Error:", error);
       addMessage('ai', "Sorry, I'm having trouble connecting right now.");

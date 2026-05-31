@@ -3,6 +3,7 @@ import { useParams, useNavigate } from 'react-router-dom';
 import YouTube from 'react-youtube';
 import { ChevronLeft, Plus, X, Loader2, RefreshCcw, Headphones, Mic, MicOff } from 'lucide-react';
 import axios from 'axios';
+import { YoutubeTranscript } from 'youtube-transcript';
 import toast from 'react-hot-toast';
 import { useVocabStore } from '../store/vocabStore';
 import { useHistoryStore } from '../store/historyStore';
@@ -332,19 +333,19 @@ const LessonPage = () => {
           }).catch(() => {});
 
         setLoadingTranscript(true);
-        // Call relative API path which will be proxied by Vite (local) or Vercel (production)
-        const res = await axios.get(`/api/transcript/${id}`, {
-          headers: { 
-            'Bypass-Tunnel-Reminder': 'true',
-            'ngrok-skip-browser-warning': '69420'
-          }
-        });
-        if (res.data.success) {
-          // Merge short chunks into natural sentences before storing
-          const merged = mergeTranscriptChunks(res.data.data, 1.5);
+        try {
+          const rawTranscript = await YoutubeTranscript.fetchTranscript(id);
+          const formattedTranscript = rawTranscript.map(item => ({
+            id: Math.random().toString(36).substr(2, 9),
+            text: item.text.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"'),
+            start: item.offset / 1000,
+            end: (item.offset + item.duration) / 1000,
+            duration: item.duration / 1000
+          }));
+          const merged = mergeTranscriptChunks(formattedTranscript, 1.5);
           setTranscript(merged);
-        } else {
-          setTranscriptError(res.data.message);
+        } catch (error) {
+          setTranscriptError('Không thể tải phụ đề từ video này. Có thể video không có phụ đề CC (chỉ có phụ đề gắn cứng vào hình), hoặc bị YouTube giới hạn máy chủ.');
         }
       } catch (err) {
         setTranscriptError('Không thể tải phụ đề từ video này. Có thể video không có phụ đề CC (chỉ có phụ đề gắn cứng vào hình), hoặc bị YouTube giới hạn máy chủ.');
