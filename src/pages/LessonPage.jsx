@@ -243,6 +243,8 @@ const LessonPage = () => {
   const [loadingTranscript, setLoadingTranscript] = useState(true);
   const [transcriptError, setTranscriptError] = useState('');
   
+  const [videoMeta, setVideoMeta] = useState({ title: null, thumbnail: null });
+  
   const [currentTime, setCurrentTime] = useState(0);
   const [activeIndex, setActiveIndex] = useState(-1);
   
@@ -321,6 +323,14 @@ const LessonPage = () => {
   useEffect(() => {
     const fetchTranscript = async () => {
       try {
+        // Fetch Video Meta
+        axios.get(`https://noembed.com/embed?url=https://www.youtube.com/watch?v=${id}`)
+          .then(res => {
+            if (res.data && res.data.title) {
+              setVideoMeta({ title: res.data.title, thumbnail: res.data.thumbnail_url });
+            }
+          }).catch(() => {});
+
         setLoadingTranscript(true);
         const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
         const res = await axios.get(`${apiUrl}/api/transcript/${id}`, {
@@ -350,7 +360,7 @@ const LessonPage = () => {
         setCurrentTime(time);
         
         if (Math.floor(time) % 5 === 0 && Math.floor(time) > 0) {
-           addOrUpdateVideo(id, null, null, time);
+           addOrUpdateVideo(id, videoMeta.title, videoMeta.thumbnail, time);
         }
         
         // Find active line: The line whose start time has passed, but the NEXT line hasn't started yet.
@@ -384,7 +394,7 @@ const LessonPage = () => {
       }
     }, 50);
     return () => clearInterval(interval);
-  }, [transcript, activeIndex, id, isPracticeMode, blankedWordsMap, pausedForDictation, addOrUpdateVideo]);
+  }, [transcript, activeIndex, id, isPracticeMode, blankedWordsMap, pausedForDictation, addOrUpdateVideo, videoMeta]);
 
   const handleWordClick = (word, sentence) => {
     if (isPracticeMode) return; // Disable click-to-translate in practice mode

@@ -90,7 +90,7 @@ const HistoryCarousel = () => {
             </Link>
             <button 
               onClick={(e) => handleRemove(e, video)}
-              className="absolute -top-2 -right-2 bg-white text-slate-300 p-2 rounded-full shadow-lg border border-slate-100 hover:text-red-500 hover:bg-red-50 transition-colors opacity-0 group-hover:opacity-100 z-20"
+              className="absolute -top-2 -right-2 bg-white text-red-400 p-2 rounded-full shadow-lg border border-slate-100 hover:text-red-600 hover:bg-red-50 transition-colors z-20"
             >
               <Trash2 size={14} />
             </button>
