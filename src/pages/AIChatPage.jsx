@@ -237,7 +237,7 @@ const AIChatPage = () => {
 
   if (!hasStarted) {
     return (
-      <div className="relative flex flex-col items-center justify-center min-h-screen bg-slate-900 overflow-hidden px-5">
+      <div className="relative flex flex-col items-center justify-center min-h-[calc(100dvh-64px)] bg-slate-900 overflow-hidden px-5">
         <div className="absolute top-[-10%] left-[-10%] w-96 h-96 bg-blue-600/30 rounded-full blur-[100px] pointer-events-none"></div>
         <div className="absolute bottom-[-10%] right-[-10%] w-96 h-96 bg-purple-600/30 rounded-full blur-[100px] pointer-events-none"></div>
         

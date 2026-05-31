@@ -228,7 +228,7 @@ const VocabPage = () => {
   }
 
   return (
-    <div className="pb-24 min-h-screen bg-slate-50">
+    <div className="pb-24 min-h-[calc(100dvh-64px)] bg-slate-50">
       {/* Header */}
       <div className="bg-white border-b border-slate-100 px-4 pt-6 pb-4 shadow-sm sticky top-0 z-20">
         <div className="flex items-start justify-between max-w-md mx-auto w-full">
