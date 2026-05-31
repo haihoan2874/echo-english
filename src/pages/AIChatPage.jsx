@@ -175,8 +175,8 @@ const AIChatPage = () => {
     }
     
     try {
-      const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-      const res = await axios.post(`${apiUrl}/api/chat`, {
+      // Call relative API path which will be proxied by Vite (local) or Vercel (production)
+      const res = await axios.post(`/api/chat`, {
         message: textToSend,
         history: history,
         systemInstruction: getSystemInstruction(level)

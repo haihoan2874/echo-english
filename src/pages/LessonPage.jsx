@@ -332,8 +332,8 @@ const LessonPage = () => {
           }).catch(() => {});
 
         setLoadingTranscript(true);
-        const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3001';
-        const res = await axios.get(`${apiUrl}/api/transcript/${id}`, {
+        // Call relative API path which will be proxied by Vite (local) or Vercel (production)
+        const res = await axios.get(`/api/transcript/${id}`, {
           headers: { 'Bypass-Tunnel-Reminder': 'true' }
         });
         if (res.data.success) {
