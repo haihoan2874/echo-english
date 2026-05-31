@@ -10,5 +10,12 @@ export default defineConfig({
   ],
   server: {
     host: true,
+    proxy: {
+      '/api/youtube': {
+        target: 'https://www.youtube.com',
+        changeOrigin: true,
+        rewrite: (path) => path.replace(/^\/api\/youtube/, '')
+      }
+    }
   }
 })

@@ -7,6 +7,7 @@ import { YoutubeTranscript } from 'youtube-transcript';
 import toast from 'react-hot-toast';
 import { useVocabStore } from '../store/vocabStore';
 import { useHistoryStore } from '../store/historyStore';
+import { Capacitor } from '@capacitor/core';
 
 // Merge short transcript chunks into natural sentences
 // (chunks closer than 1.5s gap are joined together, but we also break at punctuation or if too long)
@@ -338,7 +339,17 @@ const LessonPage = () => {
 
         setLoadingTranscript(true);
         try {
-          const rawTranscript = await YoutubeTranscript.fetchTranscript(id, { lang: 'en' });
+          const fetchConfig = { lang: 'en' };
+          
+          // If running on Web (dev), proxy through Vite to bypass CORS
+          if (!Capacitor.isNativePlatform()) {
+            fetchConfig.fetch = (url, options) => {
+              const proxyUrl = url.replace('https://www.youtube.com', '/api/youtube');
+              return fetch(proxyUrl, options);
+            };
+          }
+
+          const rawTranscript = await YoutubeTranscript.fetchTranscript(id, fetchConfig);
           const formattedTranscript = rawTranscript.map(item => ({
             id: Math.random().toString(36).substr(2, 9),
             text: item.text.replace(/&amp;/g, '&').replace(/&#39;/g, "'").replace(/&quot;/g, '"'),
