@@ -448,7 +448,7 @@ const LessonPage = () => {
   return (
     <div className="flex flex-col h-screen bg-slate-900 overflow-hidden">
       {/* Header */}
-      <header className="bg-slate-900 text-white px-4 h-14 flex items-center justify-between border-b border-slate-800 shrink-0">
+      <header className="bg-slate-900 text-white px-4 h-14 flex items-center justify-between border-b border-slate-800 shrink-0 max-w-3xl mx-auto w-full">
         <div className="flex items-center">
           <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-slate-300 hover:text-white transition-colors">
             <ChevronLeft size={24} />
@@ -474,7 +474,7 @@ const LessonPage = () => {
       </header>
 
       {/* Video Player */}
-      <div className="w-full aspect-video bg-black shrink-0 shadow-xl z-10 relative border-b border-slate-800">
+      <div className="w-full max-w-3xl mx-auto aspect-video bg-black shrink-0 shadow-xl z-10 relative border-b border-slate-800">
         <YouTube
           videoId={id}
           onReady={handlePlayerReady}

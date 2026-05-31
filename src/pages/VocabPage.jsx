@@ -231,7 +231,7 @@ const VocabPage = () => {
     <div className="pb-24 min-h-screen bg-slate-50">
       {/* Header */}
       <div className="bg-white border-b border-slate-100 px-4 pt-6 pb-4 shadow-sm sticky top-0 z-20">
-        <div className="flex items-start justify-between">
+        <div className="flex items-start justify-between max-w-md mx-auto w-full">
           <div>
             <h1 className="text-2xl font-extrabold text-slate-800">Sổ tay từ vựng</h1>
             <p className="text-slate-500 text-sm mt-0.5">Đã lưu {vocabList.length} từ</p>
@@ -249,7 +249,7 @@ const VocabPage = () => {
       </div>
 
       {/* Content */}
-      <div className="p-4">
+      <div className="p-4 max-w-md mx-auto w-full">
         {vocabList.length === 0 ? (
           <div className="text-center py-16 bg-white rounded-3xl border border-slate-100 shadow-sm mt-4">
             <BookOpen size={48} className="mx-auto text-slate-300 mb-3" />
