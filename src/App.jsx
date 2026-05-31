@@ -14,7 +14,7 @@ function App() {
       
       {/* Global Watermark */}
       <div className="fixed top-3 right-3 pointer-events-none z-[9999] opacity-30 flex items-center gap-1.5 mix-blend-difference text-white drop-shadow-md">
-        <span className="text-[10px] font-bold tracking-widest uppercase">Created by Hoan</span>
+        <span className="text-[10px] font-bold tracking-widest uppercase">TRỊNH HẢI HOÀN</span>
       </div>
 
       <Routes>
