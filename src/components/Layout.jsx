@@ -1,6 +1,6 @@
 import React from 'react';
 import { Outlet, NavLink } from 'react-router-dom';
-import { Home, PlaySquare, BookOpen } from 'lucide-react';
+import { Home, Mic, BookOpen } from 'lucide-react';
 
 const Layout = () => {
   return (
@@ -22,8 +22,8 @@ const Layout = () => {
           to="/ai-chat" 
           className={({ isActive }) => `flex flex-col items-center gap-1 ${isActive ? 'text-primary' : 'text-slate-400'}`}
         >
-          <PlaySquare size={24} />
-          <span className="text-xs font-medium">Luyện Nói</span>
+          <Mic size={24} />
+          <span className="text-xs font-medium">Phát âm</span>
         </NavLink>
         
         <NavLink 

@@ -8,38 +8,38 @@ const LinkInputForm = ({ url, setUrl, loading, onSubmit, error }) => {
 
   useGSAP(() => {
     gsap.from(formRef.current, {
-      y: 20,
+      y: 15,
       opacity: 0,
-      duration: 0.6,
+      duration: 0.5,
       ease: 'power3.out',
-      delay: 0.4
+      delay: 0.2
     });
   }, []);
 
   return (
-    <div ref={formRef} className="px-4 max-w-md mx-auto -mt-6 relative z-50">
-      <div className="bg-white p-2 rounded-2xl shadow-[0_10px_30px_rgba(0,0,0,0.08)] border border-slate-100 transition-all focus-within:shadow-[0_10px_40px_rgba(0,0,0,0.12)] focus-within:border-primary/30">
+    <div ref={formRef} className="w-full">
+      <div className="bg-white p-1.5 rounded-2xl shadow-sm border border-slate-200 transition-all focus-within:shadow-md focus-within:border-slate-300">
         <form onSubmit={onSubmit} className="relative flex items-center">
-          <div className="pl-3 text-slate-400 shrink-0">
-            <Search size={20} />
+          <div className="pl-4 text-slate-400 shrink-0">
+            <Search size={18} />
           </div>
           <input 
             type="text" 
             value={url}
             onChange={(e) => setUrl(e.target.value)}
             disabled={loading}
-            placeholder="Dán link YouTube..."
-            className="w-full bg-transparent py-3 px-3 text-sm focus:outline-none text-slate-700 disabled:opacity-50"
+            placeholder="Dán link YouTube để học..."
+            className="w-full bg-transparent py-3.5 px-3 text-[15px] font-medium focus:outline-none text-slate-800 disabled:opacity-50 placeholder-slate-400"
           />
           <button 
             type="submit"
             disabled={loading}
-            className="shrink-0 bg-primary text-white px-4 py-2.5 rounded-xl font-bold hover:bg-blue-600 transition-all disabled:opacity-50 flex items-center gap-1 shadow-lg shadow-blue-500/30 hover:shadow-blue-500/50 active:scale-95"
+            className="shrink-0 bg-slate-900 text-white px-5 py-3 rounded-xl font-bold hover:bg-slate-800 transition-all disabled:opacity-50 flex items-center gap-1.5 active:scale-95"
           >
             {loading ? <Loader2 size={18} className="animate-spin" /> : <><Plus size={18} /> Thêm</>}
           </button>
         </form>
-        {error && <p className="text-red-500 text-xs mt-2 px-3 pb-1 animate-in slide-in-from-top-2">{error}</p>}
+        {error && <p className="text-red-500 text-xs font-medium mt-1 mb-1 px-4 animate-in slide-in-from-top-1">{error}</p>}
       </div>
     </div>
   );

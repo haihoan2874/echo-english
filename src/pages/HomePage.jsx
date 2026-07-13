@@ -3,42 +3,31 @@ import axios from 'axios';
 import { useGSAP } from '@gsap/react';
 import gsap from 'gsap';
 import toast from 'react-hot-toast';
+import { Rocket, Settings } from 'lucide-react';
 
 import StatCards from '../components/home/StatCards';
 import LinkInputForm from '../components/home/LinkInputForm';
 import PlaylistView from '../components/home/PlaylistView';
 import HistoryCarousel from '../components/home/HistoryCarousel';
+import HeatmapGraph from '../components/home/HeatmapGraph';
 import PlaylistModal from '../components/modals/PlaylistModal';
-
-const LogoSVG = () => (
-  <svg width="40" height="40" viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" className="drop-shadow-lg">
-    <rect width="100" height="100" rx="24" fill="url(#paint0_linear)"/>
-    <path d="M30 50C30 38.9543 38.9543 30 50 30C61.0457 30 70 38.9543 70 50" stroke="white" strokeWidth="8" strokeLinecap="round"/>
-    <path d="M40 50C40 44.4772 44.4772 40 50 40C55.5228 40 60 44.4772 60 50" stroke="white" strokeWidth="8" strokeLinecap="round"/>
-    <circle cx="50" cy="55" r="8" fill="white"/>
-    <defs>
-      <linearGradient id="paint0_linear" x1="0" y1="0" x2="100" y2="100" gradientUnits="userSpaceOnUse">
-        <stop stopColor="#3B82F6" />
-        <stop offset="1" stopColor="#1D4ED8" />
-      </linearGradient>
-    </defs>
-  </svg>
-);
+import SettingsModal from '../components/modals/SettingsModal';
 
 const HomePage = () => {
   const [url, setUrl] = useState('');
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
   const [modalOpen, setModalOpen] = useState(false);
+  const [settingsOpen, setSettingsOpen] = useState(false);
   const [pendingVideo, setPendingVideo] = useState(null);
   
   const headerRef = useRef();
 
   useGSAP(() => {
     gsap.from(headerRef.current, {
-      y: -50,
+      y: -20,
       opacity: 0,
-      duration: 0.8,
+      duration: 0.6,
       ease: 'power3.out'
     });
   }, []);
@@ -78,26 +67,35 @@ const HomePage = () => {
   };
 
   return (
-    <div className="pb-24 bg-slate-50 min-h-full flex flex-col relative">
+    <div className="pb-24 bg-[#F8F9FA] min-h-[100dvh] flex flex-col">
       
-      {/* Sticky Header Section */}
-      <div className="sticky top-0 z-40 bg-slate-50">
-        <div ref={headerRef} className="bg-slate-900 text-white rounded-b-[40px] px-6 pt-8 pb-12 shadow-lg relative overflow-hidden">
-          <div className="absolute top-0 right-0 w-64 h-64 bg-primary/20 rounded-full blur-3xl -translate-y-1/2 translate-x-1/2"></div>
-          
-          <div className="relative z-10 max-w-md mx-auto w-full">
-            <header className="mb-8 flex items-center gap-4">
-              <LogoSVG />
-              <div>
-                <h1 className="text-xl font-medium text-slate-300">Chào mừng trở lại,</h1>
-                <p className="text-3xl font-extrabold mt-1 tracking-tight bg-clip-text text-transparent bg-gradient-to-r from-white to-slate-400">EchoEnglish 🚀</p>
-              </div>
-            </header>
-
-            <StatCards />
+      {/* Minimal Header Section */}
+      <div className="sticky top-0 z-40 bg-[#F8F9FA]/80 backdrop-blur-xl border-b border-slate-200/50">
+        <div ref={headerRef} className="px-5 pt-8 pb-5 max-w-md mx-auto w-full flex items-center justify-between">
+          <div>
+            <h1 className="text-[11px] font-bold text-slate-400 uppercase tracking-[0.2em] mb-1">Tổng quan</h1>
+            <p className="text-2xl font-extrabold tracking-tight text-slate-900">EchoEnglish.</p>
+          </div>
+          <div className="flex items-center gap-2">
+            <button 
+              onClick={() => setSettingsOpen(true)}
+              className="w-10 h-10 rounded-full bg-white border border-slate-200 flex items-center justify-center shadow-sm text-slate-500 hover:text-slate-900 transition-colors"
+            >
+              <Settings size={18} />
+            </button>
+            <div className="w-10 h-10 rounded-full bg-slate-900 flex items-center justify-center shadow-md shadow-slate-900/10">
+               <Rocket size={18} className="text-white" />
+            </div>
           </div>
         </div>
+      </div>
 
+      {/* Scrollable Content Area */}
+      <div className="flex-1 px-5 max-w-md mx-auto w-full pt-6 space-y-10">
+        <StatCards />
+        
+        <HeatmapGraph />
+        
         <LinkInputForm 
           url={url} 
           setUrl={setUrl} 
@@ -105,10 +103,7 @@ const HomePage = () => {
           onSubmit={handleAddClick} 
           error={error} 
         />
-      </div>
-
-      {/* Scrollable Content Area */}
-      <div className="flex-1 px-4 max-w-md mx-auto w-full pt-8 space-y-10">
+        
         <HistoryCarousel />
         <PlaylistView />
       </div>
@@ -117,6 +112,11 @@ const HomePage = () => {
         isOpen={modalOpen} 
         onClose={() => setModalOpen(false)} 
         videoData={pendingVideo} 
+      />
+
+      <SettingsModal 
+        isOpen={settingsOpen}
+        onClose={() => setSettingsOpen(false)}
       />
     </div>
   );

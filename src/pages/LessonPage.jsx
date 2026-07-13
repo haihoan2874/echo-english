@@ -1,13 +1,14 @@
 import React, { useState, useRef, useEffect, useMemo } from 'react';
 import { useParams, useNavigate } from 'react-router-dom';
 import YouTube from 'react-youtube';
-import { ChevronLeft, Plus, X, Loader2, RefreshCcw, Headphones, Mic, MicOff, FileText } from 'lucide-react';
+import { ChevronLeft, Plus, X, Loader2, RefreshCcw, Headphones, Mic, MicOff, FileText, Sparkles } from 'lucide-react';
 import axios from 'axios';
 import { YoutubeTranscript } from 'youtube-transcript';
 import toast from 'react-hot-toast';
 import { useVocabStore } from '../store/vocabStore';
 import { useHistoryStore } from '../store/historyStore';
-import { Capacitor } from '@capacitor/core';
+import MagicScannerModal from '../components/modals/MagicScannerModal';
+
 
 // Merge short transcript chunks into natural sentences
 // (chunks closer than 1.5s gap are joined together, but we also break at punctuation or if too long)
@@ -249,6 +250,8 @@ const LessonPage = () => {
   const [loadingTranscript, setLoadingTranscript] = useState(true);
   const [transcriptError, setTranscriptError] = useState('');
   
+  const [scannerOpen, setScannerOpen] = useState(false);
+  
   const [videoMeta, setVideoMeta] = useState({ title: null, thumbnail: null });
   
   const [currentTime, setCurrentTime] = useState(0);
@@ -342,7 +345,7 @@ const LessonPage = () => {
           const fetchConfig = { lang: 'en' };
           
           // If running on Web (dev), proxy through Vite to bypass CORS
-          if (!Capacitor.isNativePlatform()) {
+          if (import.meta.env.DEV) {
             fetchConfig.fetch = (url, options) => {
               const proxyUrl = url.replace('https://www.youtube.com', '/api/youtube');
               return fetch(proxyUrl, options);
@@ -466,22 +469,32 @@ const LessonPage = () => {
           </button>
           <h1 className="font-semibold ml-2 line-clamp-1">Phòng học VIP</h1>
         </div>
-        
-        {/* Practice Toggle */}
-        <button 
-          onClick={() => {
-            setIsPracticeMode(!isPracticeMode);
-            solvedLinesRef.current.clear();
-            setPausedForDictation(false);
-            if (playerRef.current && playerRef.current.playVideo) playerRef.current.playVideo();
-          }}
-          className={`flex items-center gap-2 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
-            isPracticeMode ? 'bg-yellow-500 text-slate-900 shadow-md shadow-yellow-500/20' : 'bg-slate-800 text-slate-400 border border-slate-700'
-          }`}
-        >
-          <Headphones size={14} />
-          Luyện nghe điền từ
-        </button>
+        {/* Magic Scan & Practice Toggle Group */}
+        <div className="flex items-center gap-2">
+          <button 
+            onClick={() => setScannerOpen(true)}
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-all bg-indigo-500 hover:bg-indigo-600 text-white shadow-md shadow-indigo-500/20 active:scale-95"
+            title="Quét từ vựng tự động"
+          >
+            <Sparkles size={14} className="animate-pulse" />
+            <span className="hidden sm:inline">Magic Scan</span>
+          </button>
+
+          <button 
+            onClick={() => {
+              setIsPracticeMode(!isPracticeMode);
+              solvedLinesRef.current.clear();
+              setPausedForDictation(false);
+              if (playerRef.current && playerRef.current.playVideo) playerRef.current.playVideo();
+            }}
+            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-full text-xs font-bold transition-colors ${
+              isPracticeMode ? 'bg-yellow-500 text-slate-900 shadow-md shadow-yellow-500/20' : 'bg-slate-800 text-slate-400 border border-slate-700 hover:bg-slate-700'
+            }`}
+          >
+            <Headphones size={14} />
+            <span className="hidden sm:inline">Luyện nghe</span>
+          </button>
+        </div>
       </header>
 
       {/* Video Player */}
@@ -631,6 +644,13 @@ const LessonPage = () => {
           />
         </>
       )}
+
+      {/* Magic Scanner Modal */}
+      <MagicScannerModal 
+        isOpen={scannerOpen}
+        onClose={() => setScannerOpen(false)}
+        transcript={transcript}
+      />
     </div>
   );
 };

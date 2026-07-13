@@ -11,11 +11,14 @@ export const useHistoryStore = create(
           let newList = [...state.historyList];
           
           if (existingIndex >= 0) {
-            newList[existingIndex] = {
+            const updatedVideo = {
               ...newList[existingIndex],
               progressTime: Math.max(newList[existingIndex].progressTime, progressTime),
               lastWatched: new Date().toISOString()
             };
+            // Remove the old entry and unshift the updated one to the front
+            newList.splice(existingIndex, 1);
+            newList.unshift(updatedVideo);
           } else {
             newList.unshift({
               videoId,
