@@ -79,18 +79,19 @@ const AIChatPage = () => {
 
   const currentVocab = practiceQueue[currentIndex];
 
+  let currentAudio = null;
   const speakText = (text) => {
-    if (!window.speechSynthesis) return;
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    
-    const voices = window.speechSynthesis.getVoices();
-    const enVoice = voices.find(v => v.lang.startsWith('en-US') && v.name.includes('Google')) || voices.find(v => v.lang.startsWith('en'));
-    if (enVoice) utterance.voice = enVoice;
-
-    utterance.lang = 'en-US';
-    utterance.rate = useVocabStore.getState().settings.voiceSpeed || 0.85;
-    window.speechSynthesis.speak(utterance);
+    try {
+      if (currentAudio) {
+        currentAudio.pause();
+        currentAudio.currentTime = 0;
+      }
+      const url = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=2`;
+      currentAudio = new Audio(url);
+      currentAudio.play().catch(e => console.error("Audio play failed:", e));
+    } catch (err) {
+      console.error("Audio system error:", err);
+    }
   };
 
   const toggleMic = () => {

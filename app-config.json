@@ -1,17 +1,18 @@
 {
+  "appId": "2338690423754943158",
   "app": {
     "title": "Echo English",
     "headerTitle": "Echo English",
     "headerColor": "#0f172a",
     "textColor": "white",
     "statusBar": "normal",
-    "actionbar": true,
-    "selfControlTheme": false,
-    "hideAndroidBottomNavigationBar": true
+    "actionbar": true
   },
-  "listNetDomain": [
-    "https://noembed.com",
-    "https://img.youtube.com",
-    "https://www.youtube.com"
-  ]
+  "listSyncJS": [
+    "/assets/index.js"
+  ],
+  "listCSS": [
+    "/assets/index.css"
+  ],
+  "listAsyncJS": []
 }

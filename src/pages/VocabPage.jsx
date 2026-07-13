@@ -4,23 +4,20 @@ import { Trash2, Volume2, RotateCcw, Check, X, BookOpen, Brain, Download, Folder
 import toast from 'react-hot-toast';
 import { PRESET_PACKS } from '../data/vocabData';
 
+let currentAudio = null;
+
 const speak = (text) => {
-  if ('speechSynthesis' in window) {
-    window.speechSynthesis.cancel();
-    const utterance = new SpeechSynthesisUtterance(text);
-    
-    // Select premium native voice
-    const voices = window.speechSynthesis.getVoices();
-    // Prefer Google US English, otherwise any English voice
-    const enVoice = voices.find(v => v.lang.startsWith('en-US') && v.name.includes('Google')) || voices.find(v => v.lang.startsWith('en'));
-    
-    if (enVoice) {
-      utterance.voice = enVoice;
+  try {
+    if (currentAudio) {
+      currentAudio.pause();
+      currentAudio.currentTime = 0;
     }
-    
-    utterance.lang = 'en-US';
-    utterance.rate = useVocabStore.getState().settings.voiceSpeed || 0.85; 
-    window.speechSynthesis.speak(utterance);
+    // Sử dụng Youdao API thay vì Google vì Google có thể bị chặn CORS trong Zalo
+    const url = `https://dict.youdao.com/dictvoice?audio=${encodeURIComponent(text)}&type=2`;
+    currentAudio = new Audio(url);
+    currentAudio.play().catch(e => console.error("Audio play failed:", e));
+  } catch (err) {
+    console.error("Audio system error:", err);
   }
 };
 
