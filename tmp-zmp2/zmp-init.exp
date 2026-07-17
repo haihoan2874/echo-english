@@ -1,6 +1,0 @@
-#!/usr/bin/expect -f
-spawn npx zmp init zmp-test-app
-expect "Mini App ID"
-send "2338690423754943158\r"
-expect "Choose a Login Method"
-send "\003"

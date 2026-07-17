@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { HashRouter, Routes, Route } from 'react-router-dom';
+import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Toaster } from 'react-hot-toast';
 import Layout from './components/Layout';
 import HomePage from './pages/HomePage';
@@ -16,7 +16,7 @@ function App() {
   }, [checkLoginDaily]);
 
   return (
-    <HashRouter>
+    <BrowserRouter>
       <Toaster 
         position="top-center" 
         toastOptions={{ 
@@ -58,7 +58,7 @@ function App() {
         </Route>
         <Route path="/lesson/:id" element={<LessonPage />} />
       </Routes>
-    </HashRouter>
+    </BrowserRouter>
   );
 }
 
