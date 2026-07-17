@@ -111,6 +111,8 @@ const AIChatPage = () => {
     }
   };
 
+  const autoNextTimeoutRef = useRef(null);
+
   const evaluateSpeech = (spokenText) => {
     if (!currentVocab) return;
     
@@ -127,7 +129,8 @@ const AIChatPage = () => {
       toast.success('+20 XP', { duration: 1500, id: 'xp-reward' });
       
       // Auto move to next after short delay
-      setTimeout(() => {
+      if (autoNextTimeoutRef.current) clearTimeout(autoNextTimeoutRef.current);
+      autoNextTimeoutRef.current = setTimeout(() => {
         handleNext();
       }, 2000);
     } else {
@@ -136,6 +139,11 @@ const AIChatPage = () => {
   };
 
   const handleNext = () => {
+    if (autoNextTimeoutRef.current) {
+      clearTimeout(autoNextTimeoutRef.current);
+      autoNextTimeoutRef.current = null;
+    }
+    
     setResultStatus(null);
     setTranscript('');
     setIsListening(false);
